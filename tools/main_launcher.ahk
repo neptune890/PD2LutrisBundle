@@ -2,7 +2,7 @@
 ahkExe := "C:\tools\AutoHotkeyU32.exe"
 
 ; Run prompt_user_info.ahk
-;RunWait, %ahkExe% "C:\tools\prompt_user_info.ahk"
+RunWait, %ahkExe% "C:\tools\prompt_user_info.ahk"
 
 ; Run run_downloader.ahk
 RunWait, %ahkExe% "C:\tools\run_downloader.ahk"
