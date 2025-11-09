@@ -8,5 +8,6 @@ RunWait, %ahkExe% "C:\tools\getkeys.ahk"
 RunWait, %ahkExe% "C:\tools\installd2.ahk"
 
 ; Run run_installer.ahk
-RunWait, %ahkExe% "C:\tools\installd2.ahk"
+RunWait, %ahkExe% "C:\tools\installd2lod.ahk"
+
 
