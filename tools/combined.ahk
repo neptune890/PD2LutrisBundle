@@ -1,4 +1,3 @@
-
 ; Prompt for user name
 InputBox, userName, Diablo II Setup, Please enter your name:
 if ErrorLevel {
@@ -28,66 +27,18 @@ IniWrite, %cdKeylod%, %iniPath%, UserInfo, cdkeylod
 
 ;MsgBox, User info saved successfully.
 
-; Download D2 Installer
-SetTitleMatchMode, 2
-
-;if FileExist("C:\\tools\\D2-1.14b-Installer-enUS") {
-;    MsgBox, Installer already exists. Skipping download.
-;    ExitApp
-;}
-
-if FileExist("C:\\tools\\Downloader_Diablo2_enUS.exe") {
-	Run, C:\tools\Downloader_Diablo2_enUS.exe
-
-	WinWait, File Download - Security Warning,, 10
-	IfWinExist, File Download - Security Warning
-	{
-		WinActivate
-		Sleep, 500
-		ControlClick, Cancel
-	}
-
-	; Wait for the Browse for Folder dialog
-	WinWait, Browse For Folder
-	WinActivate
-	Sleep, 500
-
-	; Click inside the window to ensure focus
-	Click, 100, 100  ; Adjust coordinates if needed to hit the scrollable area
-	Sleep, 300
-
-	; Reset to top of tree
-	Send, {Home}
-	Sleep, 300
-
-	; Navigate to "This PC"
-	Send, This
-	Sleep, 300
-	Send, {Right}
-	Sleep, 300
-
-	; Navigate to "Local Disk (C:)"
-	Send, Local Disk
-	Sleep, 300
-	Send, {Right}
-	Sleep, 300
-
-	; Navigate to "tools"
-	Send, tools
-	Sleep, 300
-
-	; Confirm selection
-	Send, {Enter}
-
-}
-
-; Run D2 Installer
 SetTitleMatchMode, 2
 
 ; Read user info
 IniRead, userName, C:\tools\user_info.ini, UserInfo, username
 IniRead, cdKey, C:\tools\user_info.ini, UserInfo, cdkey
 
+if FileExist("C:\\tools\\Downloader_Diablo2_enUS.exe") {
+	RegWrite, REG_SZ, HKEY_CURRENT_USER\Software\Blizzard Entertainment\Downloader\84CE44E25D34D9A292D7AAD5D31E54E866C10C9C, Path, C:\tools
+	Run, C:\tools\Downloader_Diablo2_enUS.exe
+} else {
+	MsgBox, Installation downloader missing.
+}
 ; Step 1: Wait for and click "Install Diablo II"
 Loop {
     IfWinExist, Diablo II Installer
@@ -100,7 +51,7 @@ Loop {
 }
 
 ; Send "D" to activate "Install Diablo II" button
-Send, d
+ControlSend,, d, Diablo II Installer
 Sleep, 1000
 
 WinWait, End User License Agreement
@@ -141,79 +92,25 @@ Sleep, 500
 Send, {Enter}
 Sleep, 500
 
-; Step 5: Wait for Installation Complete screen using ImageSearch
-Loop, 60 {
+; Step 4: Wait for Installation Complete screen using ImageSearch
+Loop, 90 {
     ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, C:\tools\install_complete.bmp
     if (ErrorLevel = 0) {
-        ; Found the image
-        ; MsgBox, Installation Complete screen detected.
+        if WinExist("Diablo II Installer") {
+			WinClose, Diablo II Installer
+		}
         break
     }
     Sleep, 1000
 }
 
-; Send "B" to go back
-Send, b
-Sleep, 1000
-
-; Send "X" to exit installer
-Send, x
-Sleep, 1000
-
-; Download D2 LOD Installer
-SetTitleMatchMode, 2
-
-;if FileExist("C:\\tools\\D2-1.14b-Installer-enUS") {
-;    MsgBox, Installer already exists. Skipping download.
-;    ExitApp
-;}
-
-if FileExist("C:\\tools\\Downloader_Diablo2_Lord_of_Destruction_enUS.exe") {
-	Run, C:\tools\Downloader_Diablo2_Lord_of_Destruction_enUS.exe
-
-	WinWait, File Download - Security Warning,, 10
-	IfWinExist, File Download - Security Warning
-	{
-		WinActivate
-		Sleep, 500
-		ControlClick, Cancel
-	}
-
-	; Wait for the Browse for Folder dialog
-	WinWait, Browse For Folder
-	WinActivate
-	Sleep, 500
-	
-	; Click inside the window to ensure focus
-	Click, 100, 100  ; Adjust coordinates if needed to hit the scrollable area
-	Sleep, 300
-
-	; Reset to top of tree
-	Send, {Home}
-	Sleep, 300
-
-	; Navigate to "This PC"
-	Send, This
-	Sleep, 300
-	Send, {Right}
-	Sleep, 300
-
-	; Navigate to "Local Disk (C:)"
-	Send, Local Disk
-	Sleep, 300
-	Send, {Right}
-	Sleep, 300
-
-	; Navigate to "tools"
-	Send, tools
-	Sleep, 300
-
-	; Confirm selection
-	Send, {Enter}
-
+; If image wasn't found after 90 seconds, close the installer window
+if (ErrorLevel = 1) {
+    if WinExist("Diablo II Installer") {
+        WinClose, Diablo II Installer
+    }
 }
 
-; Run D2 LOD Installer
 SetTitleMatchMode, 2
 
 ; Read user info
@@ -221,6 +118,12 @@ IniRead, userName, C:\tools\user_info.ini, UserInfo, username
 IniRead, cdKey, C:\tools\user_info.ini, UserInfo, cdkey
 IniRead, cdKeylod, C:\tools\user_info.ini, UserInfo, cdkeylod
 
+if FileExist("C:\\tools\\Downloader_Diablo2_Lord_of_Destruction_enUS.exe") {
+	RegWrite, REG_SZ, HKEY_CURRENT_USER\Software\Blizzard Entertainment\Downloader\82C051339F174D5CF9C383BBF752B9B6B1DB2B54, Path, C:\tools
+	Run, C:\tools\Downloader_Diablo2_Lord_of_Destruction_enUS.exe
+	} else {
+	MsgBox, Installation downloader missing.
+}
 ; Step 1: Wait for and click "Install Diablo II - LOD"
 Loop {
     IfWinExist, Diablo II - Lord of Destruction
@@ -265,24 +168,22 @@ Sleep, 500  ; Wait 0.5 seconds before clicking OK
 Send, !o
 Sleep, 500
 
+
 ; Step 4: Wait for Installation Complete screen using ImageSearch
-Loop, 60 {
+Loop, 90 {
     ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, C:\tools\install_complete.bmp
     if (ErrorLevel = 0) {
-        ; Found the image
-        ; MsgBox, Installation Complete screen detected.
+		if WinExist("Diablo II - Lord of Destruction") {
+			WinClose, Diablo II - Lord of Destruction
+		}
         break
     }
     Sleep, 1000
 }
 
-WinActivate, Diablo II - Lord of Destruction
-Sleep, 500
-
-; Send "B" to go back
-Send, b
-Sleep, 1000
-
-; Send "X" to exit installer
-Send, x
-Sleep, 1000
+; If image wasn't found after 90 seconds, close the installer window
+if (ErrorLevel = 1) {
+    if WinExist("Diablo II - Lord of Destruction") {
+        WinClose, Diablo II - Lord of Destruction
+    }
+}
